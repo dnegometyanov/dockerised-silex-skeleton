@@ -1,57 +1,47 @@
-The Docker setup for PHP applications using PHP7-FPM and Nginx described in http://geekyplatypus.com/dockerise-your-php-application-with-nginx-and-php7-fpm
+The Docker setup with Silex framework skeleton php application using PHP7-FPM and Nginx based on two repositories:
 
-## Instructions
-1. Checkout the repository
-* ~~Create a record in your `hosts` file to point `php-docker.local` to your Docker environment~~
-* Run `docker-compose up`
-* ~~Navigate to php-docker.local:8080 in a browser~~
-* Navigate to localhost:8080
+    https://github.com/mikechernev/dockerised-php
 
-That's it! You have your local PHP setup using Docker
-
-*Example of activated PHP logging* - https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
-
-# Silex Simple REST
-[![Latest Stable Version](https://poser.pugx.org/vesparny/silex-simple-rest/v/stable.png)](https://packagist.org/packages/vesparny/silex-simple-rest) [![Total Downloads](https://poser.pugx.org/vesparny/silex-simple-rest/downloads.png)](https://packagist.org/packages/vesparny/silex-simple-rest) [![Build Status](https://secure.travis-ci.org/vesparny/silex-simple-rest.png)](http://travis-ci.org/vesparny/silex-simple-rest) [![Dependency Status](https://www.versioneye.com/user/projects/53d0e4eacca8fffeb200006d/badge.png)](https://www.versioneye.com/user/projects/53d0e4eacca8fffeb200006d)
-
-
-A simple silex skeleton application for writing RESTful API. Developed and maintained by [Alessandro Arnodo](http://alessandro.arnodo.net).
+    https://github.com/vesparny/silex-simple-rest
 
 **This project wants to be a starting point to writing scalable and maintainable REST api with Silex PHP micro-framework**
 
-Continuous Integration is provided by [Travis-CI](http://travis-ci.org/).
+## Instructions
+1. Checkout the repository
+2. Run `docker-compose up`
+3. Run `docker ps`, it  should display two running containers, something like
 
-#### How do I run it?
-After download the last [release](https://github.com/vesparny/silex-simple-rest/releases), from the root folder of the project, run the following commands to install the php dependencies, import some data, and run a local php server.
+    _fbd8e14b7db1        dockerisedsilexskeleton_php   "docker-php-entryp..."   3 hours ago         Up 3 hours                  9000/tcp                           dockerisedsilexskeleton_php_1_
 
-You need at least php **5.5.9*** with **SQLite extension** enabled and **Composer**
+    _9eb0cb0f6e7d        nginx:latest                  "nginx -g 'daemon ..."   3 hours ago         Up 3 hours                  443/tcp, 0.0.0.0:8080->80/tcp      dockerisedsilexskeleton_web_13_
+
+4. Using the container name of php container, for example in the case upper it is `dockerisedsilexskeleton_php_1`
+
+    Run `docker exec -it dockerisedsilexskeleton_php_1 composer install`
+
+    This should install composer dependencies for the project.
+
+4. Import Sqlite3 db dump:
+
+```
+    docker exec -i dockerisedsilexskeleton_php_1 bash <<'EOF'
+    sqlite3 app.db < /var/www/silex/resources/sql/schema.sql
+    exit
+    EOF
+```
+ 
+5. `curl http://localhost:8080/api/v1/notes -H 'Content-Type: application/json' -w "\n"`
+
+That's it! You have your local Silex skeleton setup using Docker
     
-    composer install 
-    sqlite3 app.db < resources/sql/schema.sql
-    php -S 0:9001 -t web/
-
-You can install the project also as a composer project
-		
-		composer create-project vesparny/silex-simple-rest
-    
-Your api is now available at http://localhost:9001/api/v1.
-
-#### Run tests
-Some tests were written, and all CRUD operations are fully tested :)
-
-From the root folder run the following command to run tests.
-    
-    vendor/bin/phpunit 
-
-
 #### What you will get
 The api will respond to
 
-	GET  ->   http://localhost:9001/api/v1/notes
-    GET  ->   http://localhost:9001/api/v1/notes/{id}
-	POST ->   http://localhost:9001/api/v1/notes
-	PUT ->   http://localhost:9001/api/v1/notes/{id}
-	DELETE -> http://localhost:9001/api/v1/notes/{id}
+	GET  ->   http://localhost:8080/api/v1/notes
+    GET  ->   http://localhost:8080/api/v1/notes/{id}
+	POST ->   http://localhost:8080/api/v1/notes
+	PUT ->   http://localhost:8080/api/v1/notes/{id}
+	DELETE -> http://localhost:8080/api/v1/notes/{id}
 
 Your request should have 'Content-Type: application/json' header.
 Your api is CORS compliant out of the box, so it's capable of cross-domain communication.
@@ -59,45 +49,24 @@ Your api is CORS compliant out of the box, so it's capable of cross-domain commu
 Try with curl:
 	
 	#GET (collection)
-	curl http://localhost:9001/api/v1/notes -H 'Content-Type: application/json' -w "\n"
+	curl http://localhost:8080/api/v1/notes -H 'Content-Type: application/json' -w "\n"
 	
 	#GET (single item with id 1)
-    curl http://localhost:9001/api/v1/notes/1 -H 'Content-Type: application/json' -w "\n"
+    curl http://localhost:8080/api/v1/notes/1 -H 'Content-Type: application/json' -w "\n"
 
 	#POST (insert)
-	curl -X POST http://localhost:9001/api/v1/notes -d '{"note":"Hello World!"}' -H 'Content-Type: application/json' -w "\n"
+	curl -X POST http://localhost:8080/api/v1/notes -d '{"note":"Hello World!"}' -H 'Content-Type: application/json' -w "\n"
 
 	#PUT (update)
-	curl -X PUT http://localhost:9001/api/v1/notes/1 -d '{"note":"Uhauuuuuuu!"}' -H 'Content-Type: application/json' -w "\n"
+	curl -X PUT http://localhost:8080/api/v1/notes/1 -d '{"note":"Uhauuuuuuu!"}' -H 'Content-Type: application/json' -w "\n"
 
 	#DELETE
-	curl -X DELETE http://localhost:9001/api/v1/notes/1 -H 'Content-Type: application/json' -w "\n"
+	curl -X DELETE http://localhost:8080/api/v1/notes/1 -H 'Content-Type: application/json' -w "\n"
+	
+	
+#### Run tests
+Some tests were written, and all CRUD operations are fully tested :)
 
-#### What's under the hood
-Take a look at the source code, it's self explanatory :)
-More documentation and info about the code will be available soon.
-
-Under the resources folder you can find a .htaccess file to put the api in production.
-
-#### Contributing
-
-Fell free to contribute, fork, pull request, hack. Thanks!
-
-#### Author
-
-
-+	[@vesparny](https://twitter.com/vesparny)
-
-+	[http://alessandro.arnodo.net](http://alessandro.arnodo.net)
-
-+	<mailto:alessandro@arnodo.net>
-
-## License
-
-see LICENSE file.
-
-
-
-
-
-
+From the root folder run the following command to run tests.
+    
+    vendor/bin/phpunit 
