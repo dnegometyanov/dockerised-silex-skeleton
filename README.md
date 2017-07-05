@@ -8,23 +8,23 @@ The Docker setup with Silex framework skeleton php application using PHP7-FPM an
 
 ## Instructions
 1. Checkout the repository
-2. Run `docker-compose up`
+2. Run `docker-compose up --build` (further, if no changes were made to env, you can use just `docker-compose up`, also there is an option `-d` for background mode)
 3. Run `docker ps`, it  should display two running containers, something like
 
-    _fbd8e14b7db1        dockerisedsilexskeleton_php   "docker-php-entryp..."   3 hours ago         Up 3 hours                  9000/tcp                           dockerisedsilexskeleton_php_1_
+    _fbd8e14b7db1        dockerisedsilexskeleton_php   "docker-php-entryp..."   3 hours ago         Up 3 hours                  9000/tcp                           ohttosfintegration_php_1_
 
     _9eb0cb0f6e7d        nginx:latest                  "nginx -g 'daemon ..."   3 hours ago         Up 3 hours                  443/tcp, 0.0.0.0:8080->80/tcp      dockerisedsilexskeleton_web_13_
 
-4. Using the container name of php container, for example in the case upper it is `dockerisedsilexskeleton_php_1`
+4. Using the container name of php container, for example in the case upper it is `ohttosfintegration_php_1`
 
-    Run `docker exec -it dockerisedsilexskeleton_php_1 composer install`
+    Run `docker exec -it ohttosfintegration_php_1 composer install`
 
     This should install composer dependencies for the project.
 
 4. Import Sqlite3 db dump:
 
 ```
-    docker exec -i dockerisedsilexskeleton_php_1 bash <<'EOF'
+    docker exec -i ohttosfintegration_php_1 bash <<'EOF'
     sqlite3 app.db < /var/www/silex/resources/sql/schema.sql
     exit
     EOF
